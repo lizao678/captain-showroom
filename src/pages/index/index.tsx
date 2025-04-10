@@ -55,16 +55,11 @@ const Index = () => {
         return
       }
 
-      // 构建提交数据，将驼峰命名改为下划线命名
+      // 构建提交数据
       const submitData = {
-        name: formData.name,
-        department: formData.department,
-        reason: formData.reason,
-        borrow_sample: formData.borrowSample,
-        expected_return_time: formData.expectedReturnTime || null,
-        remark: formData.remark || null,
+        ...formData,
         date: new Date().toISOString().split('T')[0],
-        enter_time: new Date().toISOString()
+        enterTime: new Date().toISOString(),
       }
 
       // 发送请求

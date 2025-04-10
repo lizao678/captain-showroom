@@ -89,7 +89,13 @@ async function sendNotificationEmail(record) {
     console.error('邮件发送失败:', error);
   }
 }
-
+const formatDateTime = (dateTime) => {
+    if (!dateTime) return null;
+    // 将ISO格式转换为MySQL格式 (YYYY-MM-DD HH:mm:ss)
+    return new Date(dateTime).toISOString().slice(0, 19).replace('T', ' ');
+  };
+  
+  
 // API 路由
 // 提交申请
 app.post('/api/submit', (req, res) => {

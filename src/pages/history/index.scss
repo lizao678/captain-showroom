@@ -1,0 +1,100 @@
+.history {
+  padding: 24px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header {
+  font-size: 36px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+.loading {
+  text-align: center;
+  color: #999;
+  font-size: 28px;
+  margin-top: 100px;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  font-size: 28px;
+  margin-top: 100px;
+}
+
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.record-item {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.name {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+}
+
+.status {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.status-approved {
+  background-color: #e8f5e9;
+  color: #4caf50;
+}
+
+.status-rejected {
+  background-color: #ffebee;
+  color: #f44336;
+}
+
+.status-pending {
+  background-color: #fff3e0;
+  color: #ff9800;
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+}
+
+.label {
+  font-size: 28px;
+  color: #666;
+  min-width: 160px;
+}
+
+.value {
+  font-size: 28px;
+  color: #333;
+  flex: 1;
+} 

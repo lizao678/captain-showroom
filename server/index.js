@@ -115,7 +115,8 @@ app.post('/api/submit', (req, res) => {
     expectedReturnTime: formattedExpectedReturnTime,
     remark: record.remark,
     date: record.date,
-    enterTime: formattedEnterTime
+    enterTime: formattedEnterTime,
+    sampleId:record.sampleId
   };
   
   db.query('INSERT INTO showroom_log SET ?', data, async (err, result) => {

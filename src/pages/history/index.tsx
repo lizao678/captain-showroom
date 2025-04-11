@@ -17,6 +17,7 @@ interface Record {
   actualReturnTime: string | null
   remark: string
   status: 'pending' | 'approved' | 'rejected'
+  sampleId:string
 }
 
 export default function History() {
@@ -32,18 +33,15 @@ export default function History() {
       })
 
       if (res.statusCode === 200) {
+        
         // 将下划线命名转换为驼峰命名
         const formattedRecords = res.data.map(record => ({
+            ...record,
           id: record.id,
           name: record.name,
           department: record.department,
           date: record.date,
-          enterTime: record.enter_time,
-          leaveTime: record.leave_time,
           reason: record.reason,
-          borrowSample: record.borrow_sample,
-          expectedReturnTime: record.expected_return_time,
-          actualReturnTime: record.actual_return_time,
           remark: record.remark,
           status: record.status
         }))
@@ -66,6 +64,7 @@ export default function History() {
 
   // 格式化时间
   const formatDateTime = (dateTimeStr: string) => {
+    
     const date = new Date(dateTimeStr)
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
   }
@@ -109,8 +108,8 @@ export default function History() {
                 </View>
 
                 <View className='info-item'>
-                  <Text className='label'>日期：</Text>
-                  <Text className='value'>{record.date}</Text>
+                  <Text className='label'>申请日期：</Text>
+                  <Text className='value'>{formatDateTime(record.date).slice(0, -5)}</Text>
                 </View>
 
                 <View className='info-item'>
@@ -132,6 +131,10 @@ export default function History() {
 
                 {record.borrowSample && (
                   <>
+                    <View className='info-item'>
+                        <Text className='label'>样衣编号：</Text>
+                        <Text className='value'>{record.sampleId}</Text>
+                    </View>
                     <View className='info-item'>
                       <Text className='label'>预计归还：</Text>
                       <Text className='value'>

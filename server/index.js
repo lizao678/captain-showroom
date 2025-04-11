@@ -16,6 +16,31 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
+// 创建数据表
+const createTablesSQL = [
+  `CREATE TABLE IF NOT EXISTS showroom_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    reason TEXT NOT NULL,
+    borrowSample BOOLEAN DEFAULT false,
+    expectedReturnTime DATETIME,
+    sampleId VARCHAR(50),
+    actualReturnTime DATETIME,
+    remark TEXT,
+    date DATE NOT NULL,
+    enterTime DATETIME NOT NULL,
+    leaveTime DATETIME,
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS admin_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )`
+];
+
 // 连接数据库
 db.connect((err) => {
   if (err) {
@@ -25,31 +50,14 @@ db.connect((err) => {
   console.log('数据库连接成功');
   
   // 创建数据表
-  const createTableSQL = `
-    CREATE TABLE IF NOT EXISTS showroom_log (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(50) NOT NULL,
-      department VARCHAR(50) NOT NULL,
-      reason TEXT NOT NULL,
-      borrowSample BOOLEAN DEFAULT false,
-      expectedReturnTime DATETIME,
-      sampleId VARCHAR(50),
-      actualReturnTime DATETIME,
-      remark TEXT,
-      date DATE NOT NULL,
-      enterTime DATETIME NOT NULL,
-      leaveTime DATETIME,
-      status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `;
-  
-  db.query(createTableSQL, (err) => {
-    if (err) {
-      console.error('创建数据表失败:', err);
-      return;
-    }
-    console.log('数据表创建/确认成功');
+  createTablesSQL.forEach((sql, index) => {
+    db.query(sql, (err) => {
+      if (err) {
+        console.error(`创建数据表 ${index + 1} 失败:`, err);
+        return;
+      }
+      console.log(`数据表 ${index + 1} 创建/确认成功`);
+    });
   });
 });
 
@@ -146,11 +154,64 @@ app.get('/api/records', (req, res) => {
   });
 });
 
+// 管理员验证中间件
+const checkAdmin = (req, res, next) => {
+  const adminCode = req.headers['x-admin-code'];
+  if (!adminCode) {
+    return res.status(401).json({ error: '未提供管理员邀请码' });
+  }
+
+  db.query('SELECT * FROM admin_codes WHERE code = ?', [adminCode], (err, results) => {
+    if (err) {
+      console.error('验证管理员失败:', err);
+      return res.status(500).json({ error: '验证管理员失败' });
+    }
+    if (results.length === 0) {
+      return res.status(403).json({ error: '无效的管理员邀请码' });
+    }
+    next();
+  });
+};
+
+// 验证管理员邀请码
+app.post('/api/verify-admin', (req, res) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ error: '请提供邀请码' });
+  }
+
+  db.query('SELECT * FROM admin_codes WHERE code = ?', [code], (err, results) => {
+    if (err) {
+      console.error('验证邀请码失败:', err);
+      return res.status(500).json({ error: '验证邀请码失败' });
+    }
+    if (results.length === 0) {
+      return res.status(403).json({ error: '无效的邀请码' });
+    }
+    res.json({ isAdmin: true });
+  });
+});
+
+// 获取待审核记录
+app.get('/api/pending-records', checkAdmin, (req, res) => {
+  db.query('SELECT * FROM showroom_log WHERE status = "pending" ORDER BY createdAt DESC', (err, results) => {
+    if (err) {
+      console.error('获取待审核记录失败:', err);
+      return res.status(500).json({ error: '获取待审核记录失败' });
+    }
+    res.json(results);
+  });
+});
+
 // 更新记录状态
-app.put('/api/records/:id/status', (req, res) => {
+app.put('/api/records/:id/status', checkAdmin, (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: '无效的状态值' });
+  }
+
   db.query(
     'UPDATE showroom_log SET status = ? WHERE id = ?',
     [status, id],

@@ -5,7 +5,7 @@ services:
     image: mysql:8.0
     container_name: showroom-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: showroom_system
       MYSQL_USER: showroom
       MYSQL_PASSWORD: showroom123

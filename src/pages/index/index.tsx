@@ -14,6 +14,8 @@ interface FormData {
   borrowSample: boolean
   expectedReturnTime?: string
   remark?: string
+  sampleId?: string
+  enterTime: string
 }
 
 const Index = () => {
@@ -34,7 +36,9 @@ const Index = () => {
     reason: '',
     borrowSample: false,
     expectedReturnTime: '',
-    remark: ''
+    remark: '',
+    sampleId: '',
+    enterTime: ''
   })
 
 //   const handleModal = useCallback(() => {
@@ -72,7 +76,7 @@ const Index = () => {
       if (res.statusCode === 200) {
         // 请求订阅消息
         await Taro.requestSubscribeMessage({
-          tmplIds: ['YOUR_TEMPLATE_ID'], // 替换为你的模板ID
+          tmplIds: [WECHAT_TEMPLATE_ID || ''], // 替换为你的模板ID
           success: (res) => {
             console.log('订阅成功', res)
           },
@@ -136,7 +140,9 @@ const Index = () => {
         
         <Form onSubmit={handleSubmit}>
           <View className='form-item'>
-            <View className='label'>姓名 *</View>
+            <View className='label'> 
+                姓名 <Text className='required'>*</Text>
+            </View>
             <Input
               className='input'
               value={formData.name}
@@ -146,7 +152,9 @@ const Index = () => {
           </View>
 
           <View className='form-item'>
-            <View className='label'>部门 *</View>
+            <View className='label'> 
+                部门 <Text className='required'>*</Text>
+            </View>
             <Input
               className='input'
               value={formData.department}
@@ -156,13 +164,29 @@ const Index = () => {
           </View>
 
           <View className='form-item'>
-            <View className='label'>事由 *</View>
+            <View className='label'>
+                事由 <Text className='required'>*</Text>
+            </View>
             <Textarea
               className='textarea'
               value={formData.reason}
               onInput={e => setFormData(prev => ({ ...prev, reason: e.detail.value }))}
               placeholder='请输入进入事由'
             />
+          </View>
+          <View className='form-item'>
+            <View className='label'> 
+            进入时间：<Text className='required'>*</Text>
+            </View>
+            <Picker
+                mode='time'
+                defaultValue={new Date().toTimeString().slice(0, 5)}
+                onChange={e => setFormData(prev => ({ ...prev, enterTime: e.detail.value }))}
+              >
+                <View className='picker'>
+                  {formData.enterTime || '请选择进入时间'}
+                </View>
+              </Picker>
           </View>
 
           <View className='form-item'>
@@ -172,6 +196,17 @@ const Index = () => {
               onChange={e => setFormData(prev => ({ ...prev, borrowSample: e.detail.value }))}
             />
           </View>
+          {formData.borrowSample && (
+            <View className='form-item'>
+              <View className='label'>样衣编号</View>
+              <Input
+                className='input'
+                value={formData.sampleId}
+                onInput={e => setFormData(prev => ({ ...prev, sampleId: e.detail.value }))}
+                placeholder='请输入样衣编号'
+                />
+            </View>
+          )}
 
           {formData.borrowSample && (
             <View className='form-item'>
@@ -186,6 +221,7 @@ const Index = () => {
               </Picker>
             </View>
           )}
+         
 
           <View className='form-item'>
             <View className='label'>备注</View>

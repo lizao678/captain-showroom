@@ -1,7 +1,17 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+// import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import devConfig from './dev'
 import prodConfig from './prod'
+import * as path from 'path';
+import * as dotenv from 'dotenv';
+
+// 根据环境加载对应的 .env 文件
+const envFile = process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production';
+dotenv.config({ path: path.resolve(__dirname, '../', envFile) });
+// 如果没有特定环境的 .env 文件，则加载默认的 .env
+if (!process.env.WECHAT_APPID) {
+  dotenv.config({ path: path.resolve(__dirname, '../', '.env') });
+}
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'vite'>(async (merge, { command, mode }) => {
@@ -21,7 +31,12 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
        '@taro-hooks/plugin-react' 
     ],
     defineConstants: {
-    },
+        // 注入环境变量到前端代码
+        WECHAT_APPID: JSON.stringify(process.env.WECHAT_APPID),
+        WECHAT_SECRET: JSON.stringify(process.env.WECHAT_SECRET),
+        WECHAT_TEMPLATE_ID: JSON.stringify(process.env.WECHAT_TEMPLATE_ID),
+        // API_BASE_URL: JSON.stringify(process.env.API_BASE_URL),
+      },
     copy: {
       patterns: [
       ],

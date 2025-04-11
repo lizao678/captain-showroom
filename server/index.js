@@ -33,6 +33,7 @@ db.connect((err) => {
       reason TEXT NOT NULL,
       borrowSample BOOLEAN DEFAULT false,
       expectedReturnTime DATETIME,
+      sampleId VARCHAR(50),
       actualReturnTime DATETIME,
       remark TEXT,
       date DATE NOT NULL,
@@ -79,6 +80,7 @@ async function sendNotificationEmail(record) {
         <p><strong>事由：</strong>${record.reason}</p>
         ${record.borrowSample ? `
           <p><strong>借用样衣：</strong>是</p>
+          <p><strong>样衣编号：</strong>${record.sampleId || '未提供'}</p>
           <p><strong>预计归还时间：</strong>${record.expectedReturnTime || '未设置'}</p>
         ` : ''}
         ${record.remark ? `<p><strong>备注：</strong>${record.remark}</p>` : ''}

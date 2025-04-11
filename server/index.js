@@ -153,9 +153,30 @@ app.post('/api/submit', (req, res) => {
   });
 });
 
-// 获取历史记录
+// 获取已审核记录
+app.get('/api/reviewed-records', (req, res) => {
+  const adminCode = req.headers['x-admin-code'];
+  if (!adminCode) {
+    return res.status(401).json({ error: '未授权访问' });
+  }
+
+  db.query('SELECT * FROM showroom_log WHERE status != "pending" ORDER BY date DESC, enterTime DESC', (err, results) => {
+    if (err) {
+      console.error('获取已审核记录失败:', err);
+      return res.status(500).json({ error: '获取记录失败' });
+    }
+    res.json(results);
+  });
+});
+
+// 获取所有记录
 app.get('/api/records', (req, res) => {
-  db.query('SELECT * FROM showroom_log ORDER BY createdAt DESC', (err, results) => {
+  const adminCode = req.headers['x-admin-code'];
+  if (!adminCode) {
+    return res.status(401).json({ error: '未授权访问' });
+  }
+
+  db.query('SELECT * FROM showroom_log ORDER BY date DESC, enterTime DESC', (err, results) => {
     if (err) {
       console.error('获取记录失败:', err);
       return res.status(500).json({ error: '获取记录失败' });

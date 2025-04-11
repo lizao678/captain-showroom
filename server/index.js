@@ -59,6 +59,16 @@ db.connect((err) => {
       console.log(`数据表 ${index + 1} 创建/确认成功`);
     });
   });
+
+  // 初始化管理员邀请码
+  const initAdminCode = 'admin123'; // 设置默认管理员邀请码
+  db.query('INSERT IGNORE INTO admin_codes (code) VALUES (?)', [initAdminCode], (err) => {
+    if (err) {
+      console.error('初始化管理员邀请码失败:', err);
+      return;
+    }
+    console.log('管理员邀请码初始化成功');
+  });
 });
 
 // 配置邮件发送

@@ -116,6 +116,13 @@ const Index = () => {
     })
   }
 
+   // 跳转到审核后台
+   const navigateToAdmin = () => {
+    Taro.navigateTo({
+      url: '/pages/admin/index'
+    })
+  }
+
   return (
     <View className="wrapper">
       <Image className="logo" src={logo} />
@@ -239,6 +246,9 @@ const Index = () => {
             </Button>
             <Button className='history-btn' onClick={navigateToHistory}>
               查看历史记录
+            </Button>
+            <Button className='admin-btn' onClick={navigateToAdmin}>
+              进入审核后台
             </Button>
           </View>
         </Form>

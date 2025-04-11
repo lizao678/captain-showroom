@@ -101,18 +101,18 @@ const Index = () => {
   }
 
   // 跳转到历史记录页面
-  const navigateToHistory = () => {
-    Taro.navigateTo({
-      url: '/pages/history/index'
-    })
-  }
+//   const navigateToHistory = () => {
+//     Taro.navigateTo({
+//       url: '/pages/history/index'
+//     })
+//   }
 
    // 跳转到审核后台
-   const navigateToAdmin = () => {
-    Taro.navigateTo({
-      url: '/pages/admin/index'
-    })
-  }
+//    const navigateToAdmin = () => {
+//     Taro.navigateTo({
+//       url: '/pages/admin/index'
+//     })
+//   }
 
   return (
     <View className="wrapper">
@@ -235,12 +235,12 @@ const Index = () => {
             <Button className='submit-btn' formType='submit' type='primary'>
               提交
             </Button>
-            <Button className='history-btn' onClick={navigateToHistory}>
+            {/* <Button className='history-btn' onClick={navigateToHistory}>
               查看历史记录
-            </Button>
-            <Button className='admin-btn' onClick={navigateToAdmin}>
+            </Button> */}
+            {/* <Button className='admin-btn' onClick={navigateToAdmin}>
               进入审核后台
-            </Button>
+            </Button> */}
           </View>
         </Form>
       </View>

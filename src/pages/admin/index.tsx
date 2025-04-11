@@ -168,6 +168,56 @@ const AdminPage = () => {
     }
   };
 
+  // 格式化时间
+  const formatTime = (dateTimeStr: string) => {
+    if (!dateTimeStr) return '';
+    const date = new Date(dateTimeStr);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  };
+
+  // 导出Excel
+  const exportToExcel = async () => {
+    try {
+      const storedCode = Taro.getStorageSync('adminCode');
+      let url = 'http://localhost:3000/api/export-excel';
+      
+      // 根据当前tab选择不同的导出类型
+      const exportType = activeTab;
+      
+      const res = await Taro.request({
+        url,
+        method: 'GET',
+        header: {
+          'x-admin-code': storedCode,
+          'export-type': exportType
+        }
+      });
+
+      if (res.statusCode === 200 && res.data.success) {
+        // 创建下载链接
+        const link = document.createElement('a');
+        link.href = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${res.data.data}`;
+        link.download = res.data.fileName as string;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        Taro.showToast({
+          title: '导出成功',
+          icon: 'success'
+        });
+      } else {
+        throw new Error('导出失败');
+      }
+    } catch (error) {
+      console.error('导出失败', error);
+      Taro.showToast({
+        title: '导出失败',
+        icon: 'none'
+      });
+    }
+  };
+
   return (
     <View className='admin-container'>
       {!isVerified ? (
@@ -207,19 +257,19 @@ const AdminPage = () => {
               records.map(record => (
                 <View key={record.id} className='record-card'>
                   <View className='record-info'>
-                    <Text>姓名：{record.name}</Text>
-                    <Text>部门：{record.department}</Text>
-                    <Text>事由：{record.reason}</Text>
-                    <Text>进入时间：{record.enterTime}</Text>
+                    <View>姓名：{record.name}</View>
+                    <View>部门：{record.department}</View>
+                    <View>事由：{record.reason}</View>
+                    <View>进入时间：{formatTime(record.enterTime)}</View>
                     {record.borrowSample && (
                       <>
-                        <Text>样衣编号：{record.sampleId}</Text>
-                        <Text>预计归还时间：{record.expectedReturnTime}</Text>
+                        <View>样衣编号：{record.sampleId}</View>
+                        <View>预计归还时间：{formatTime(record.expectedReturnTime)}</View>
                       </>
                     )}
-                    <Text className={`status status-${record.status}`}>
+                    <View className={`status status-${record.status}`}>
                       状态：{getStatusText(record.status)}
-                    </Text>
+                    </View>
                   </View>
                   {record.status === 'pending' && (
                     <View className='action-buttons'>
@@ -241,6 +291,9 @@ const AdminPage = () => {
               ))
             )}
           </ScrollView>
+          <Button className='export-btn' onClick={exportToExcel}>
+            导出Excel
+          </Button>
         </View>
       )}
     </View>

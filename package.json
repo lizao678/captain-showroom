@@ -33,7 +33,8 @@
     "dotenv": "^16.5.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "taro-hooks": "2"
+    "taro-hooks": "2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",

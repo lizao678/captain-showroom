@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const nodemailer = require('nodemailer');
+const XLSX = require('xlsx');
 
 const app = express();
 app.use(cors());
@@ -290,6 +291,87 @@ app.put('/api/records/:id/return', (req, res) => {
       res.json({ success: true });
     }
   );
+});
+
+// 导出Excel
+app.get('/api/export-excel', (req, res) => {
+  const adminCode = req.headers['x-admin-code'];
+  const exportType = req.headers['export-type'];
+
+  if (!adminCode) {
+    return res.status(401).json({ error: '未授权访问' });
+  }
+
+  // 验证管理员权限
+  db.query('SELECT * FROM admin_codes WHERE code = ?', [adminCode], (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(403).json({ error: '无效的管理员邀请码' });
+    }
+
+    // 构建查询条件
+    let query = 'SELECT * FROM showroom_log';
+    if (exportType === 'pending') {
+      query += ' WHERE status = "pending"';
+    } else if (exportType === 'reviewed') {
+      query += ' WHERE status != "pending"';
+    }
+    query += ' ORDER BY date DESC, enterTime DESC';
+
+    // 获取数据
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('获取导出数据失败:', err);
+        return res.status(500).json({ error: '获取数据失败' });
+      }
+
+      // 格式化数据
+      const formattedData = results.map(record => ({
+        '姓名': record.name,
+        '部门': record.department,
+        '事由': record.reason,
+        '进入时间': new Date(record.enterTime).toLocaleString('zh-CN'),
+        '是否借出样衣': record.borrowSample ? '是' : '否',
+        '样衣编号': record.sampleId || '',
+        '预计归还时间': record.expectedReturnTime ? new Date(record.expectedReturnTime).toLocaleString('zh-CN') : '',
+        '状态': record.status === 'pending' ? '待审核' : (record.status === 'approved' ? '已通过' : '已拒绝'),
+        '备注': record.remark || ''
+      }));
+
+      // 创建工作簿
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(formattedData);
+
+      // 设置列宽
+      const colWidths = [
+        { wch: 10 }, // 姓名
+        { wch: 15 }, // 部门
+        { wch: 30 }, // 事由
+        { wch: 20 }, // 进入时间
+        { wch: 12 }, // 是否借出样衣
+        { wch: 15 }, // 样衣编号
+        { wch: 20 }, // 预计归还时间
+        { wch: 10 }, // 状态
+        { wch: 20 }  // 备注
+      ];
+      ws['!cols'] = colWidths;
+
+      // 将工作表添加到工作簿
+      XLSX.utils.book_append_sheet(wb, ws, '展厅记录');
+
+      // 生成Excel文件并转换为base64
+      const excelBuffer = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+
+      // 设置文件名
+      const fileName = `展厅记录_${exportType}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+      // 返回base64数据和文件名
+      res.json({
+        success: true,
+        data: excelBuffer,
+        fileName: fileName
+      });
+    });
+  });
 });
 
 const PORT = process.env.PORT || 3000;

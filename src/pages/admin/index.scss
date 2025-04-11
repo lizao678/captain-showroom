@@ -2,6 +2,8 @@
   padding: 20px;
   min-height: 100vh;
   background-color: #f5f5f5;
+  position: relative;
+  padding-bottom: 80px; // 为浮动按钮留出空间
 }
 
 .verify-section {
@@ -14,7 +16,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   .title {
-    font-size: 24px;
+    // font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
   }
@@ -42,6 +44,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  position: relative;
+  min-height: calc(100vh - 40px);
 
   .tabs {
     display: flex;
@@ -52,7 +56,7 @@
       flex: 1;
       text-align: center;
       padding: 12px 0;
-      font-size: 16px;
+    //   font-size: 16px;
       color: #666;
       position: relative;
       transition: all 0.3s;
@@ -89,11 +93,12 @@
 
     .record-info {
       margin-bottom: 15px;
+      padding-right: 20px;
 
       Text {
         display: block;
         margin-bottom: 8px;
-        font-size: 14px;
+        // font-size: 14px;
         color: #333;
       }
 
@@ -101,7 +106,7 @@
         display: inline-block;
         padding: 2px 8px;
         border-radius: 4px;
-        font-size: 12px;
+        // font-size: 12px;
         margin-top: 8px;
 
         &.status-pending {
@@ -122,28 +127,21 @@
     }
 
     .action-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
+        padding-right: 15px;
+    //   display: flex;
+    //   justify-content: flex-end;
+    //   gap: 10px;
 
-      Button {
-        min-width: 80px;
-        height: 32px;
-        line-height: 32px;
-        font-size: 14px;
-        border-radius: 4px;
-        padding: 0 15px;
+    //   Button {
+    //     min-width: 80px;
+    //     height: 32px;
+    //     line-height: 32px;
+    //     // font-size: 14px;
+    //     border-radius: 4px;
+    //     padding: 0 15px;
 
-        &.approve-btn {
-          background-color: #52c41a;
-          color: #fff;
-        }
-
-        &.reject-btn {
-          background-color: #f5222d;
-          color: #fff;
-        }
-      }
+       
+    //   }
     }
   }
 
@@ -151,7 +149,42 @@
     display: block;
     text-align: center;
     color: #999;
-    font-size: 14px;
+    // font-size: 14px;
     padding: 20px 0;
+  }
+
+  .export-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1890ff;
+    color: #fff;
+    border-radius: 33px;
+    padding: 0 24px;
+    height: 66px;
+    line-height: 66px;
+    // font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    &:active::after {
+      opacity: 1;
+    }
   }
 } 

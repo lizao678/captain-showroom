@@ -74,17 +74,6 @@ const Index = () => {
       })
 
       if (res.statusCode === 200) {
-        // 请求订阅消息
-        await Taro.requestSubscribeMessage({
-          tmplIds: [WECHAT_TEMPLATE_ID || ''], // 替换为你的模板ID
-          success: (res) => {
-            console.log('订阅成功', res)
-          },
-          fail: (err) => {
-            console.error('订阅失败', err)
-          }
-        })
-
         Taro.showToast({
           title: '提交成功',
           icon: 'success'
@@ -97,7 +86,9 @@ const Index = () => {
           reason: '',
           borrowSample: false,
           expectedReturnTime: '',
-          remark: ''
+          remark: '',
+          sampleId: '',
+          enterTime: ''
         })
       }
     } catch (error) {

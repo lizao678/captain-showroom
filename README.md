@@ -1,13 +1,12 @@
 # 展厅登记系统
 
-基于 Taro（React）+ Express + MySQL 的展厅人员进出登记系统，支持微信小程序和 H5。
+基于 Taro（React）+ Express + MySQL 的展厅人员进出登记系统。
 
 ## 功能特点
 
 - 人员进出登记
 - 样衣借用管理
 - 邮件通知
-- 微信订阅消息
 - 历史记录查询
 - 审批流程管理
 
@@ -51,19 +50,11 @@ pnpm install
 
 2. 开发模式：
 ```bash
-# 微信小程序
-pnpm dev:weapp
-
-# H5
 pnpm dev:h5
 ```
 
 3. 打包：
 ```bash
-# 微信小程序
-pnpm build:weapp
-
-# H5
 pnpm build:h5
 ```
 
@@ -109,16 +100,14 @@ pnpm start
 - `MAIL_PASS`: 邮箱密码
 - `MAIL_TO`: 管理员邮箱
 
-### 微信小程序配置
-- `WECHAT_APPID`: 小程序 AppID
-- `WECHAT_SECRET`: 小程序密钥
-- `WECHAT_TEMPLATE_ID`: 订阅消息模板 ID
+### API配置
+- `API_BASE_URL`: API基础URL
 
 ## 部署说明
 
 1. 前端部署：
-   - 微信小程序：使用微信开发者工具上传
-   - H5：部署到 Web 服务器
+   - 使用 `pnpm build:h5` 构建项目
+   - 将构建后的文件部署到Web服务器
 
 2. 后端部署：
    - 安装 Node.js 环境
@@ -135,6 +124,4 @@ CREATE DATABASE showroom_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 2. 确保 MySQL 服务已启动并可访问
 
-3. 微信小程序需要在管理后台配置服务器域名和 TLS 证书
-
-4. 建议在生产环境使用 HTTPS 
+3. 建议在生产环境使用 HTTPS 

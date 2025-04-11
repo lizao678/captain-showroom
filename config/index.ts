@@ -9,9 +9,7 @@ import * as dotenv from 'dotenv';
 const envFile = process.env.NODE_ENV === 'development' ? '.env.development' : '.env.production';
 dotenv.config({ path: path.resolve(__dirname, '../', envFile) });
 // 如果没有特定环境的 .env 文件，则加载默认的 .env
-if (!process.env.WECHAT_APPID) {
-  dotenv.config({ path: path.resolve(__dirname, '../', '.env') });
-}
+dotenv.config({ path: path.resolve(__dirname, '../', '.env') });
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'vite'>(async (merge, { command, mode }) => {
@@ -32,10 +30,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     ],
     defineConstants: {
         // 注入环境变量到前端代码
-        WECHAT_APPID: JSON.stringify(process.env.WECHAT_APPID),
-        WECHAT_SECRET: JSON.stringify(process.env.WECHAT_SECRET),
-        WECHAT_TEMPLATE_ID: JSON.stringify(process.env.WECHAT_TEMPLATE_ID),
-        // API_BASE_URL: JSON.stringify(process.env.API_BASE_URL),
+        API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || 'http://localhost:3000'),
       },
     copy: {
       patterns: [

@@ -42,35 +42,57 @@ const createTablesSQL = [
   )`
 ];
 
+// 数据库连接重试函数
+const connectWithRetry = (retries = 5, delay = 5000) => {
+  return new Promise((resolve, reject) => {
+    const attempt = (retryCount) => {
+      db.connect((err) => {
+        if (err) {
+          console.error(`数据库连接失败 (尝试 ${retryCount}/${retries}):`, err);
+          if (retryCount > 0) {
+            console.log(`等待 ${delay/1000} 秒后重试...`);
+            setTimeout(() => attempt(retryCount - 1), delay);
+          } else {
+            reject(err);
+          }
+        } else {
+          console.log('数据库连接成功');
+          resolve();
+        }
+      });
+    };
+    attempt(retries);
+  });
+};
+
 // 连接数据库
-db.connect((err) => {
-  if (err) {
-    console.error('数据库连接失败:', err);
-    return;
-  }
-  console.log('数据库连接成功');
-  
-  // 创建数据表
-  createTablesSQL.forEach((sql, index) => {
-    db.query(sql, (err) => {
+connectWithRetry()
+  .then(() => {
+    // 创建数据表
+    createTablesSQL.forEach((sql, index) => {
+      db.query(sql, (err) => {
+        if (err) {
+          console.error(`创建数据表 ${index + 1} 失败:`, err);
+          return;
+        }
+        console.log(`数据表 ${index + 1} 创建/确认成功`);
+      });
+    });
+
+    // 初始化管理员邀请码
+    const initAdminCode = 'admin123'; // 设置默认管理员邀请码
+    db.query('INSERT IGNORE INTO admin_codes (code) VALUES (?)', [initAdminCode], (err) => {
       if (err) {
-        console.error(`创建数据表 ${index + 1} 失败:`, err);
+        console.error('初始化管理员邀请码失败:', err);
         return;
       }
-      console.log(`数据表 ${index + 1} 创建/确认成功`);
+      console.log('管理员邀请码初始化成功');
     });
+  })
+  .catch((err) => {
+    console.error('数据库连接失败，退出应用:', err);
+    process.exit(1);
   });
-
-  // 初始化管理员邀请码
-  const initAdminCode = 'admin123'; // 设置默认管理员邀请码
-  db.query('INSERT IGNORE INTO admin_codes (code) VALUES (?)', [initAdminCode], (err) => {
-    if (err) {
-      console.error('初始化管理员邀请码失败:', err);
-      return;
-    }
-    console.log('管理员邀请码初始化成功');
-  });
-});
 
 // 配置邮件发送
 const transporter = nodemailer.createTransport({

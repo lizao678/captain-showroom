@@ -1,8 +1,11 @@
 version: '3.8'
 
 services:
+  # 数据库服务
   mysql:
-    image: mysql:8.0
+    build:
+      context: .
+      dockerfile: Dockerfile.init-db
     container_name: showroom-mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
@@ -14,6 +17,34 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123456"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: showroom-backend
+    environment:
+      DB_HOST: mysql
+      DB_USER: showroom
+      DB_PASSWORD: showroom123
+      DB_NAME: showroom_system
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      MAIL_TO: ${MAIL_TO}
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
     restart: always
 
 volumes:

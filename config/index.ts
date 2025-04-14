@@ -30,7 +30,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     ],
     defineConstants: {
         // 注入环境变量到前端代码
-        API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || 'http://localhost:3000'),
+        API_BASE_URL: JSON.stringify(process.env.API_BASE_URL || 'http://localhost:3066'),
       },
     copy: {
       patterns: [

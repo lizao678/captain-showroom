@@ -68,7 +68,7 @@ const Index = () => {
 
       // 发送请求
       const res = await Taro.request({
-        url: 'http://localhost:3000/api/submit',
+        url: `${API_BASE_URL}/api/submit`,
         method: 'POST',
         data: submitData
       })

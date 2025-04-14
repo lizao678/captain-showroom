@@ -396,7 +396,8 @@ app.get('/api/export-excel', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+// 启动服务器
+const PORT = process.env.PORT || 3066;
 app.listen(PORT, () => {
   console.log(`服务器运行在端口 ${PORT}`);
 }); 

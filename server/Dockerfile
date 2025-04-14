@@ -1,4 +1,4 @@
-# 使用Node.js官方镜像作为基础镜像
+# 使用Node.js官方镜像
 FROM node:18-alpine
 
 # 设置工作目录
@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE 3066
 
 # 启动命令
 CMD ["node", "index.js"] 

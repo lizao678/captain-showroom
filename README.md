@@ -39,6 +39,28 @@ showroom-system/
 └── README.md             # 项目说明
 ```
 
+## 端口说明
+
+### 后端服务
+- 端口：3066（外部访问端口）
+- 容器内部端口：3000
+- 用途：提供 RESTful API 服务
+- 主要接口：
+  - `/api/submit` - 提交展厅登记
+  - `/api/records` - 获取所有记录
+  - `/api/pending-records` - 获取待审核记录
+  - `/api/reviewed-records` - 获取已审核记录
+  - `/api/export-excel` - 导出 Excel
+  - `/api/verify-admin` - 验证管理员身份
+
+### 数据库服务
+- 端口：3308（外部访问端口）
+- 容器内部端口：3306
+- 用途：MySQL 数据库服务
+- 数据库名：`showroom_system`
+- 用户名：`showroom`
+- 密码：`showroom123`
+
 ## 安装和运行
 
 ### 前端（Taro）
@@ -115,6 +137,31 @@ pnpm start
    - 设置环境变量
    - 使用 PM2 或其他进程管理工具运行服务
 
+## Docker 部署
+
+1. 构建镜像：
+```bash
+# 构建后端服务镜像
+docker build -t your-dockerhub-username/showroom-backend:latest -f Dockerfile .
+
+# 构建数据库初始化镜像
+docker build -t your-dockerhub-username/showroom-mysql-init:latest -f Dockerfile.init-db .
+```
+
+2. 推送镜像：
+```bash
+# 推送后端服务镜像
+docker push your-dockerhub-username/showroom-backend:latest
+
+# 推送数据库初始化镜像
+docker push your-dockerhub-username/showroom-mysql-init:latest
+```
+
+3. 启动服务：
+```bash
+docker-compose up -d
+```
+
 ## 注意事项
 
 1. 首次运行需要在 MySQL 中创建数据库：
@@ -124,4 +171,9 @@ CREATE DATABASE showroom_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 
 2. 确保 MySQL 服务已启动并可访问
 
-3. 建议在生产环境使用 HTTPS 
+3. 建议在生产环境使用 HTTPS
+
+4. 端口配置：
+   - 确保防火墙允许 3066 和 3308 端口的访问
+   - 数据库端口（3308）通常不需要对外暴露，只在容器内部使用
+   - 如果使用云服务，需要在安全组中开放这些端口 

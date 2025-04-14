@@ -40,7 +40,7 @@ const AdminPage = () => {
     try {
       setLoading(true);
       const res = await Taro.request({
-        url: 'http://localhost:3000/api/verify-admin',
+        url: `${API_BASE_URL}/api/verify-admin`,
         method: 'POST',
         data: { code: adminCode }
       });
@@ -65,13 +65,13 @@ const AdminPage = () => {
   const fetchRecords = async () => {
     try {
       const storedCode = Taro.getStorageSync('adminCode');
-      let url = 'http://localhost:3000/api/records';
+      let url = `${API_BASE_URL}/api/records`;
       
       // 根据当前tab选择不同的API
       if (activeTab === 'pending') {
-        url = 'http://localhost:3000/api/pending-records';
+        url = `${API_BASE_URL}/api/pending-records`;
       } else if (activeTab === 'reviewed') {
-        url = 'http://localhost:3000/api/reviewed-records';
+        url = `${API_BASE_URL}/api/reviewed-records`;
       }
 
       const res = await Taro.request({
@@ -95,7 +95,7 @@ const AdminPage = () => {
     try {
       const storedCode = Taro.getStorageSync('adminCode');
       const res = await Taro.request({
-        url: `http://localhost:3000/api/records/${id}/status`,
+        url: `${API_BASE_URL}/api/records/${id}/status`,
         method: 'PUT',
         header: {
           'x-admin-code': storedCode
@@ -179,7 +179,7 @@ const AdminPage = () => {
   const exportToExcel = async () => {
     try {
       const storedCode = Taro.getStorageSync('adminCode');
-      let url = 'http://localhost:3000/api/export-excel';
+      let url = `${API_BASE_URL}/api/export-excel`;
       
       // 根据当前tab选择不同的导出类型
       const exportType = activeTab;

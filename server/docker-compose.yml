@@ -3,9 +3,7 @@ version: '3.8'
 services:
   # 数据库服务
   mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile.init-db
+    image: mysql:8.0  # 使用官方MySQL镜像
     container_name: showroom-mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
@@ -13,9 +11,10 @@ services:
       MYSQL_USER: showroom
       MYSQL_PASSWORD: showroom123
     ports:
-      - "3306:3306"
+      - "3308:3306"  # MySQL 默认端口
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # 挂载初始化SQL脚本
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     healthcheck:
@@ -26,9 +25,7 @@ services:
 
   # 后端服务
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: lizao678/showroom-backend:latest
     container_name: showroom-backend
     environment:
       DB_HOST: mysql
@@ -40,8 +37,9 @@ services:
       MAIL_USER: ${MAIL_USER}
       MAIL_PASS: ${MAIL_PASS}
       MAIL_TO: ${MAIL_TO}
+      PORT: 3066  # 设置容器内部端口
     ports:
-      - "3000:3000"
+      - "3066:3066"  # API 服务端口
     depends_on:
       mysql:
         condition: service_healthy

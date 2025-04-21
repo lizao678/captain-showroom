@@ -6,9 +6,14 @@ const nodemailer = require('nodemailer');
 const XLSX = require('xlsx');
 
 const app = express();
+
+// 更详细的 CORS 配置
 app.use(cors({
-     origin:'https://captain-showroom.vercel.app'
+  origin: 'https://captain-showroom.vercel.app', // 确保这个地址和 Vercel 前端访问地址完全一致
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // 明确允许 PUT 方法
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-code', 'export-type'] // 明确允许自定义头部
 }));
+
 app.use(express.json());
 
 // 创建数据库连接

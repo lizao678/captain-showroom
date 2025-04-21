@@ -6,7 +6,9 @@ const nodemailer = require('nodemailer');
 const XLSX = require('xlsx');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+     origin:'https://captain-showroom.vercel.app'
+}));
 app.use(express.json());
 
 // 创建数据库连接
